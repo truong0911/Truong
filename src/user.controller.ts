@@ -11,9 +11,14 @@ export class UserController {
     return this.userService.create(user);
   }
 
-  @Get(':id')
-  async findById(@Param('id') id: string): Promise<User> {
-    return this.userService.findById(id);
+  @Post('login')
+  async login(@Body() loginInfo: { username: string; password: string }) {
+    return this.userService.login(loginInfo.username, loginInfo.password);
+  }
+
+  @Get(':ids')
+  async findById(@Param('ids') ids: string): Promise<User> {
+    return this.userService.findById(ids);
   }
 
   @Get()
@@ -21,14 +26,14 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() user: User): Promise<User> {
-    return this.userService.update(id, user);
+  @Put(':ids')
+  async update(@Param('ids') ids: string, @Body() user: User): Promise<User> {
+    return this.userService.update(ids, user);
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: string): Promise<User> {
-    return this.userService.delete(id);
+  @Delete(':ids')
+  async delete(@Param('ids') ids: string): Promise<User> {
+    return this.userService.delete(ids);
   }
 
 }

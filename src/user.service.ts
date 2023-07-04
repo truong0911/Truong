@@ -2,32 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './user.schema';
+import { async } from 'rxjs';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel('User') private userModel: Model<User>,
   ) {}
 
   async create(user: User): Promise<User> {
-    const createdUser = new this.userModel(user);
-    return createdUser.save();
+    return this.userModel.create(user);
   }
 
-  async findById(id: string): Promise<User> {
-    return this.userModel.findById(id).exec();
+  async findById(ids: string): Promise<User> {
+    return this.userModel.findOne({id: ids});
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return this.userModel.find();
   }
 
-  async update(id: string, user: User): Promise<User> {
-    return this.userModel.findByIdAndUpdate(id, user, { new: true }).exec();
+  async update(ids: string, user: User): Promise<User> {
+    return this.userModel.findOneAndUpdate({id: ids}, user, { new: true });
   }
 
-  async delete(id: string): Promise<User> {
-    return this.userModel.findByIdAndDelete(id).exec();
+  async delete(ids: string): Promise<User> {
+    return this.userModel.findOneAndDelete({id: ids});
+  }
+
+  async login(username: string, password: string) {
+    const user = await this.userModel.findOne({ username, password });
+    return user ? user : null;
   }
 
 }
