@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Request } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserSchema } from './users.schema';
@@ -16,6 +16,10 @@ export class UsersService {
     
       async findById(ids: string): Promise<User> {
         return this.userModel.findOne({id: ids});
+      }
+
+      async findByOneId(ids: string, id2: string): Promise<User> {
+        return id2===ids?this.userModel.findOne({id: ids}):null;
       }
     
       async findAll(): Promise<User[]> {

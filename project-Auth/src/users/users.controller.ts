@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.schema';
 import { RolesGuard } from 'src/roles/roles.guard';
@@ -25,9 +25,27 @@ export class UsersController {
     }
   
     @Get(':ids')
-    async findById(@Param('ids') ids: string): Promise<User> {
-      return this.userService.findById(ids);
+    // @UseGuards(RolesGuard)
+    // @Roles('admin')
+    async findById(@Param('ids') ids: string, @Request() req): Promise<User> {
+      const userRole = req.user.role;
+      if(userRole == 'admin'){
+        return this.userService.findById(ids);
+      }
+      else if(userRole == 'user'){
+        const id = req.user.id;
+        return this.userService.findByOneId(ids,id);
+      }
     }
+
+    // @Get(':ids')
+    // @UseGuards(RolesGuard)
+    // @Roles('user')
+    // async findByOneId(@Param('ids')  ids: string, @Request() req): Promise<User> {
+    //   const id = req.user.id;
+    //   console.log(id,ids,"456");
+    //   return this.userService.findByOneId(ids,id);
+    // }
   
     @Get()
     @Roles('admin')
