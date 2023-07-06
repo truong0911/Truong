@@ -10,7 +10,7 @@ import { RolesGuard } from './roles/roles.guard';
 
 @Module({
   // imports: [AuthModule, UsersModule],
-  // controllers: [AppController],
+  controllers: [AppController],
   providers: [AppService, 
   //   {
   //   provide: APP_GUARD,

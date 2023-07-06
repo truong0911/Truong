@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request, ParseIntPipe, HttpStatus, ParseUUIDPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.schema';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FindOneParams } from 'src/valid/find-one-param';
 // import { Role } from '../enums/role.enum';
 // import { Roles } from '../roles/roles.decorator';
 
@@ -24,17 +25,18 @@ export class UsersController {
       return this.userService.login(loginInfo.username, loginInfo.password);
     }
   
-    @Get(':ids')
+    @Get(':id')
     // @UseGuards(RolesGuard)
     // @Roles('admin')
-    async findById(@Param('ids') ids: string, @Request() req): Promise<User> {
+    async findById(@Param() params: FindOneParams, @Request() req): Promise<User> {
       const userRole = req.user.role;
       if(userRole == 'admin'){
-        return this.userService.findById(ids);
+        console.log(params.id);
+        return this.userService.findById(params.id);
       }
       else if(userRole == 'user'){
-        const id = req.user.id;
-        return this.userService.findByOneId(ids,id);
+        const userId = req.user.id;
+        return this.userService.findByOneId(params.id,userId);
       }
     }
 
@@ -53,14 +55,15 @@ export class UsersController {
       return this.userService.findAll();
     }
   
-    @Put(':ids')
-    async update(@Param('ids') ids: string, @Body() user: User): Promise<User> {
-      return this.userService.update(ids, user);
+    @Put(':id')
+    async update(@Param('id') params: FindOneParams, @Body() user: User): Promise<User> {
+      return this.userService.update(params.id, user);
     }
   
-    @Delete(':ids')
-    async delete(@Param('ids') ids: string): Promise<User> {
-      return this.userService.delete(ids);
+    @Delete(':id')
+    async delete(@Param('id') params: FindOneParams): Promise<User> {
+      return this.userService.delete(params.id);
     }
   
   }
+  
