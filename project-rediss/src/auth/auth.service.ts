@@ -21,7 +21,7 @@ export class AuthService {
     // if (user?.password !== pass) {
     //   throw new UnauthorizedException();
     // }
-    const timeWait = await this.redis.ttl(`${user.id}`);
+    const timeWait = await this.redis.ttl(`F${user.id}`);
     if(timeWait>0){
       const mess = "wait: " + timeWait;
       throw new UnauthorizedException(mess);
@@ -31,7 +31,7 @@ export class AuthService {
       const failedLoginTimes = Number.parseInt(await this.redis.get(`${user.id}`)) + 1;
 
       if (failedLoginTimes === 4) {
-        await this.redis.setex(`${user.id}`, 30, '0');
+        await this.redis.setex(`F${user.id}`, 30, '0');
       }
       console.log(await this.redis.get(`${user.id}`));
       console.log(await this.redis.ttl(`${user.id}`));
